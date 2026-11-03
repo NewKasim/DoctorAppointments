@@ -1,0 +1,22 @@
+@model DoctorAppointments.Server.ViewModels.DepartmentFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<h1>Edit Department</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit"
+              asp-route-id="@ViewData["DepartmentId"]"
+              method="post">
+
+            <partial name="_DepartmentForm" model="Model" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
