@@ -41,6 +41,19 @@
                             </a>
                         </li>
 
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-area=""
+                               asp-controller="DoctorDirectory"
+                               asp-action="Index">
+                               Find a Doctor
+                            </a>
+                            </li>
+                        }
+
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
