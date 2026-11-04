@@ -1,0 +1,19 @@
+@model DoctorAppointments.Server.ViewModels.DoctorFormViewModel
+
+@{
+    ViewData["Title"] = "Add Doctor";
+}
+
+<h1>Add Doctor</h1>
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="Create" method="post">
+            <partial name="_DoctorForm" model="Model" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
