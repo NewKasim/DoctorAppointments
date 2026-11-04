@@ -4,9 +4,11 @@ using DoctorAppointments.Server.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoctorAppointments.Server.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class DepartmentsController : Controller
 {
     private readonly AppDbContext _db;
