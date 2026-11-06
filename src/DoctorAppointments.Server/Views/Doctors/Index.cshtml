@@ -50,6 +50,13 @@ else
                         <td>@doctor.Qualification</td>
                         <td>@doctor.ExperienceYears years</td>
                         <td>₹@doctor.ConsultationFee.ToString("N2")</td>
+                         <td>
+                            <a asp-action="AddSlot"
+                               asp-route-id="@doctor.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                Add Slot
+                            </a>
+
                         <td>
                             <span class="badge @(doctor.IsActive ? "bg-success" : "bg-secondary")">
                                 @(doctor.IsActive ? "Active" : "Inactive")

@@ -1,0 +1,33 @@
+@model IReadOnlyList<DateTimeOffset>
+
+@{
+    ViewData["Title"] = "Appointment Slots";
+    var indiaOffset = TimeSpan.FromMinutes(330);
+}
+
+<h1>Appointment Slots</h1>
+<p>@(ViewData["DoctorName"])</p>
+
+@if (Model.Count == 0)
+{
+    <p>No upcoming slots are available.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var startUtc in Model)
+        {
+            var startIst = startUtc.ToOffset(indiaOffset);
+            var endIst = startIst.AddMinutes(30);
+
+            <li class="list-group-item">
+                @startIst.ToString("dd MMM yyyy, hh:mm tt")
+                &ndash; @endIst.ToString("hh:mm tt") IST
+            </li>
+        }
+    </ul>
+}
+
+<a asp-action="Index" class="btn btn-outline-secondary">
+    Back to Find a Doctor
+</a>

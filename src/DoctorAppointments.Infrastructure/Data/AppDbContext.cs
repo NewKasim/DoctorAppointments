@@ -1,6 +1,6 @@
+using DoctorAppointments.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using DoctorAppointments.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DoctorAppointments.Infrastructure.Data;
@@ -16,46 +16,49 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<Doctor> Doctors => Set<Doctor>();
 
+    public DbSet<AppointmentSlot> AppointmentSlots =>
+        Set<AppointmentSlot>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(x => x.Id);
+            entity.HasKey(department => department.Id);
 
-            entity.Property(x => x.Name)
+            entity.Property(department => department.Name)
                 .HasMaxLength(100)
                 .IsRequired();
 
-            entity.HasIndex(x => x.Name)
+            entity.HasIndex(department => department.Name)
                 .IsUnique();
 
-            entity.Property(x => x.Description)
+            entity.Property(department => department.Description)
                 .HasMaxLength(1000);
         });
 
         modelBuilder.Entity<Doctor>(entity =>
         {
-            entity.HasKey(x => x.Id);
+            entity.HasKey(doctor => doctor.Id);
 
-            entity.Property(x => x.FullName)
+            entity.Property(doctor => doctor.FullName)
                 .HasMaxLength(150)
                 .IsRequired();
 
-            entity.Property(x => x.Qualification)
+            entity.Property(doctor => doctor.Qualification)
                 .HasMaxLength(250)
                 .IsRequired();
 
-            entity.Property(x => x.About)
+            entity.Property(doctor => doctor.About)
                 .HasMaxLength(2000);
 
-            entity.Property(x => x.ConsultationFee)
+            entity.Property(doctor => doctor.ConsultationFee)
                 .HasPrecision(10, 2);
 
-            entity.HasOne(x => x.Department)
-                .WithMany(x => x.Doctors)
-                .HasForeignKey(x => x.DepartmentId)
+            entity.HasOne(doctor => doctor.Department)
+                .WithMany(department => department.Doctors)
+                .HasForeignKey(doctor => doctor.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.ToTable("Doctors", table =>
@@ -68,6 +71,23 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
                     "CK_Doctors_ExperienceYears",
                     "[ExperienceYears] >= 0");
             });
+        });
+
+        modelBuilder.Entity<AppointmentSlot>(entity =>
+        {
+            entity.HasKey(slot => slot.Id);
+
+            entity.HasIndex(slot => new
+            {
+                slot.DoctorId,
+                slot.StartsAtUtc
+            })
+            .IsUnique();
+
+            entity.HasOne(slot => slot.Doctor)
+                .WithMany()
+                .HasForeignKey(slot => slot.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

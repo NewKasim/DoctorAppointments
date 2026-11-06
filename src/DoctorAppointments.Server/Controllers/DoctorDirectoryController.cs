@@ -52,4 +52,51 @@ public class DoctorDirectoryController : Controller
 
         return View(doctors);
     }
+
+    // future slot feature
+
+    [HttpGet]
+    public async Task<IActionResult> Slots(int id)
+    {
+        var doctor = await _db.Doctors
+            .AsNoTracking()
+            .Where(doctor =>
+                doctor.Id == id &&
+                doctor.IsActive &&
+                doctor.Department.IsActive)
+            .Select(doctor => new { doctor.FullName })
+            .SingleOrDefaultAsync();
+
+        if (doctor is null)
+            return NotFound();
+
+        var now = DateTimeOffset.UtcNow;
+
+        var slots = await _db.AppointmentSlots
+            .AsNoTracking()
+            .Where(slot =>
+                slot.DoctorId == id &&
+                slot.Doctor.IsActive &&
+                slot.Doctor.Department.IsActive &&
+                slot.StartsAtUtc > now)
+            .OrderBy(slot => slot.StartsAtUtc)
+            .Select(slot => slot.StartsAtUtc)
+            .ToListAsync();
+
+        ViewData["DoctorName"] = doctor.FullName;
+
+        return View(slots);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

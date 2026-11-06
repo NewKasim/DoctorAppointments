@@ -22,6 +22,28 @@ namespace DoctorAppointments.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DoctorAppointments.Core.Entities.AppointmentSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("StartsAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId", "StartsAtUtc")
+                        .IsUnique();
+
+                    b.ToTable("AppointmentSlots");
+                });
+
             modelBuilder.Entity("DoctorAppointments.Core.Entities.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -297,6 +319,17 @@ namespace DoctorAppointments.Infrastructure.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DoctorAppointments.Core.Entities.AppointmentSlot", b =>
+                {
+                    b.HasOne("DoctorAppointments.Core.Entities.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("DoctorAppointments.Core.Entities.Doctor", b =>

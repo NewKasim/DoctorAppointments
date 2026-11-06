@@ -1,10 +1,10 @@
 using DoctorAppointments.Core.Entities;
 using DoctorAppointments.Infrastructure.Data;
 using DoctorAppointments.Server.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DoctorAppointments.Server.Controllers;
 
@@ -44,7 +44,8 @@ public class DepartmentsController : Controller
         if (string.IsNullOrWhiteSpace(model.Name))
         {
             ModelState.AddModelError(
-                nameof(model.Name), "Write to a Valid Name.");
+                nameof(model.Name),
+                "Enter a valid department name.");
         }
 
         if (!ModelState.IsValid)
@@ -57,7 +58,7 @@ public class DepartmentsController : Controller
         {
             ModelState.AddModelError(
                 nameof(model.Name),
-                "This is name is already in use.");
+                "This department name is already in use.");
 
             return View(model);
         }
@@ -79,12 +80,12 @@ public class DepartmentsController : Controller
         {
             ModelState.AddModelError(
                 nameof(model.Name),
-                "This is name is already in use.");
+                "This department name is already in use.");
 
             return View(model);
         }
 
-        TempData["Success"] = "Department successfully add.";
+        TempData["Success"] = "Department added successfully.";
 
         return RedirectToAction(nameof(Index));
     }
@@ -112,7 +113,8 @@ public class DepartmentsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
-        int id, DepartmentFormViewModel model)
+        int id,
+        DepartmentFormViewModel model)
     {
         var department = await _db.Departments.FindAsync(id);
 
@@ -120,12 +122,14 @@ public class DepartmentsController : Controller
             return NotFound();
 
         ViewData["DepartmentId"] = id;
+
         model.Name = (model.Name ?? string.Empty).Trim();
 
         if (string.IsNullOrWhiteSpace(model.Name))
         {
             ModelState.AddModelError(
-                nameof(model.Name), "Write to a Valid Name.");
+                nameof(model.Name),
+                "Enter a valid department name.");
         }
 
         if (!ModelState.IsValid)
@@ -138,7 +142,7 @@ public class DepartmentsController : Controller
         {
             ModelState.AddModelError(
                 nameof(model.Name),
-                "This is name is already in use.");
+                "This department name is already in use.");
 
             return View(model);
         }
@@ -155,7 +159,7 @@ public class DepartmentsController : Controller
         {
             ModelState.AddModelError(
                 nameof(model.Name),
-                "This is name is already in use.");
+                "This department name is already in use.");
 
             return View(model);
         }
