@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Department> Departments => Set<Department>();
 
     public DbSet<Doctor> Doctors => Set<Doctor>();
+    public DbSet<Appointment> Appointments => Set<Appointment>();
 
     public DbSet<AppointmentSlot> AppointmentSlots =>
         Set<AppointmentSlot>();
@@ -89,5 +90,34 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
                 .HasForeignKey(slot => slot.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+
+
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.HasKey(appointment => appointment.Id);
+
+            entity.HasIndex(appointment => appointment.AppointmentSlotId)
+                .IsUnique();
+
+            entity.Property(appointment => appointment.PatientUserId)
+                .HasMaxLength(450)
+                .IsRequired();
+
+            entity.Property(appointment => appointment.ConsultationFee)
+                .HasPrecision(10, 2);
+
+            entity.HasOne(appointment => appointment.Slot)
+                .WithMany()
+                .HasForeignKey(appointment => appointment.AppointmentSlotId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<IdentityUser>()
+                .WithMany()
+                .HasForeignKey(appointment => appointment.PatientUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+
+
     }
 }

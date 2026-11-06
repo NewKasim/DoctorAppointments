@@ -1,4 +1,4 @@
-@model IReadOnlyList<DateTimeOffset>
+@model IEnumerable<DoctorAppointments.Core.Entities.AppointmentSlot>
 
 @{
     ViewData["Title"] = "Appointment Slots";
@@ -6,26 +6,46 @@
 }
 
 <h1>Appointment Slots</h1>
+
 <p>@(ViewData["DoctorName"])</p>
 
-@if (Model.Count == 0)
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning">@error</div>
+}
+
+@if (!Model.Any())
 {
     <p>No upcoming slots are available.</p>
 }
 else
 {
-    <ul class="list-group mb-3">
-        @foreach (var startUtc in Model)
+    <div class="list-group mb-3">
+        @foreach (var slot in Model)
         {
-            var startIst = startUtc.ToOffset(indiaOffset);
+            var startIst = slot.StartsAtUtc.ToOffset(indiaOffset);
             var endIst = startIst.AddMinutes(30);
 
-            <li class="list-group-item">
-                @startIst.ToString("dd MMM yyyy, hh:mm tt")
-                &ndash; @endIst.ToString("hh:mm tt") IST
-            </li>
+            <div class="list-group-item d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                <span>
+                    @startIst.ToString("dd MMM yyyy, hh:mm tt")
+                    &ndash; @endIst.ToString("hh:mm tt") IST
+                </span>
+
+                <form asp-controller="Appointments"
+                      asp-action="Book"
+                      method="post">
+                    <input type="hidden"
+                           name="slotId"
+                           value="@slot.Id" />
+
+                    <button type="submit" class="btn btn-primary">
+                        Book Appointment
+                    </button>
+                </form>
+            </div>
         }
-    </ul>
+    </div>
 }
 
 <a asp-action="Index" class="btn btn-outline-secondary">

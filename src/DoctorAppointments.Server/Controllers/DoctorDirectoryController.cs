@@ -76,18 +76,18 @@ public class DoctorDirectoryController : Controller
             .AsNoTracking()
             .Where(slot =>
                 slot.DoctorId == id &&
+                slot.StartsAtUtc > now &&
                 slot.Doctor.IsActive &&
                 slot.Doctor.Department.IsActive &&
-                slot.StartsAtUtc > now)
+                !_db.Appointments.Any(appointment =>
+                    appointment.AppointmentSlotId == slot.Id))
             .OrderBy(slot => slot.StartsAtUtc)
-            .Select(slot => slot.StartsAtUtc)
             .ToListAsync();
 
         ViewData["DoctorName"] = doctor.FullName;
 
         return View(slots);
     }
-
 
 
 

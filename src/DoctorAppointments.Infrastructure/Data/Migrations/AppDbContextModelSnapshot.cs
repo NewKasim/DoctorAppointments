@@ -22,6 +22,39 @@ namespace DoctorAppointments.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DoctorAppointments.Core.Entities.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentSlotId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("BookedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("ConsultationFee")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("PatientUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentSlotId")
+                        .IsUnique();
+
+                    b.HasIndex("PatientUserId");
+
+                    b.ToTable("Appointments");
+                });
+
             modelBuilder.Entity("DoctorAppointments.Core.Entities.AppointmentSlot", b =>
                 {
                     b.Property<int>("Id")
@@ -319,6 +352,23 @@ namespace DoctorAppointments.Infrastructure.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DoctorAppointments.Core.Entities.Appointment", b =>
+                {
+                    b.HasOne("DoctorAppointments.Core.Entities.AppointmentSlot", "Slot")
+                        .WithMany()
+                        .HasForeignKey("AppointmentSlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("PatientUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("DoctorAppointments.Core.Entities.AppointmentSlot", b =>

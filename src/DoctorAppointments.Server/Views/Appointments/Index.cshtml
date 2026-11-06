@@ -1,0 +1,57 @@
+@model IEnumerable<DoctorAppointments.Core.Entities.Appointment>
+
+@{
+    ViewData["Title"] = "My Appointments";
+    var indiaOffset = TimeSpan.FromMinutes(330);
+}
+
+<h1>My Appointments</h1>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+@if (!Model.Any())
+{
+    <p>You have no appointments yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Doctor</th>
+                    <th>Date and Time (IST)</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var appointment in Model)
+                {
+                    var startIst = appointment.Slot.StartsAtUtc
+                        .ToOffset(indiaOffset);
+
+                    <tr>
+                        <td>@appointment.Id</td>
+                        <td>@appointment.Slot.Doctor.FullName</td>
+                        <td>
+                            @startIst.ToString("dd MMM yyyy, hh:mm tt")
+                        </td>
+                        <td>
+                            ₹@(appointment.ConsultationFee.ToString("N2"))
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<a asp-controller="DoctorDirectory"
+   asp-action="Index"
+   class="btn btn-outline-primary">
+    Find a Doctor
+</a>
